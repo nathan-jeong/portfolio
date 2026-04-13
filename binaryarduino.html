@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arduino Binary Counter Simulator</title>
+    <link rel="stylesheet" href="shared.css">
+    <style>
+        body {
+            background-color: var(--color-soft-gray);
+        }
+        
+        .arduino-container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        
+        .arduino-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+        
+        @media (max-width: 1024px) {
+            .arduino-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .code-panel {
+            background: var(--color-primary-white);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 32px;
+            border: 2px solid var(--color-light-orange);
+        }
+        
+        .code-title {
+            font-size: 2rem;
+            margin-bottom: 16px;
+            color: var(--color-medium-orange);
+            padding-bottom: 12px;
+            border-bottom: 3px solid var(--color-light-orange);
+        }
+        
+        .code-description {
+            color: var(--color-charcoal);
+            opacity: 0.75;
+            margin-bottom: 24px;
+            line-height: 1.7;
+        }
+        
+        .code-display {
+            background: linear-gradient(135deg, #F5F7FA 0%, #FFFFFF 100%);
+            border-radius: var(--border-radius-md);
+            padding: 20px;
+            height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--color-charcoal);
+            box-shadow: var(--shadow-inset);
+            border: 2px solid var(--color-light-blue);
+            line-height: 1.5;
+        }
+        
+        .code-display::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .code-display::-webkit-scrollbar-thumb {
+            background: var(--color-medium-orange);
+            border-radius: 4px;
+        }
+        
+        .code-display::-webkit-scrollbar-track {
+            background: var(--color-light-orange);
+        }
+        
+        .arduino-gallery {
+          margin-top: 24px;
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 12px;
+        }
+
+        .arduino-gallery img {
+          width: 100%;
+          aspect-ratio: 4 / 3;
+          object-fit: cover;
+          border-radius: var(--border-radius-md);
+          border: 2px solid var(--color-primary-white);
+          box-shadow: var(--shadow-sm);
+        }
+        
+        .sim-panel {
+            background: var(--color-primary-white);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 32px;
+            border: 2px solid var(--color-light-orange);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .sim-title {
+            font-size: 1.75rem;
+            color: var(--color-medium-orange);
+            margin-bottom: 32px;
+        }
+        
+        .led-section {
+            background: linear-gradient(135deg, var(--color-soft-gray), var(--color-light-orange));
+            border-radius: var(--border-radius-md);
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-inset);
+            width: 100%;
+        }
+        
+        .led-label {
+            color: var(--color-charcoal);
+            opacity: 0.7;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        
+        .led-container {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        
+        .led {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #D0D0D0;
+            border: 3px solid var(--color-primary-white);
+            box-shadow: var(--shadow-sm), inset 0 2px 4px rgba(0,0,0,0.1);
+            transition: all var(--transition-fast);
+        }
+        
+        .led.on {
+            background: linear-gradient(135deg, #4CAF50, #81C784);
+            box-shadow: 0 0 16px rgba(76, 175, 80, 0.6), inset 0 -2px 8px rgba(255,255,255,0.3);
+        }
+        
+        .display-section {
+            background: linear-gradient(135deg, var(--color-soft-gray), var(--color-light-orange));
+            border-radius: var(--border-radius-md);
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-inset);
+            width: 100%;
+        }
+        
+        .display-wrapper {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .segment-digit {
+            position: relative;
+            width: 60px;
+            height: 100px;
+        }
+        
+        .segment {
+            background-color: #E0E0E0;
+            transition: background-color 150ms;
+            border-radius: 3px;
+            position: absolute;
+        }
+        
+        .segment.on {
+            background: linear-gradient(135deg, #F44336, #E57373);
+            box-shadow: 0 0 8px rgba(244, 67, 54, 0.5);
+        }
+        
+        .h { height: 10px; width: 40px; }
+        .v { height: 40px; width: 10px; }
+        
+        .control-section {
+            width: 100%;
+        }
+        
+        .control-label {
+            font-weight: 600;
+            color: var(--color-charcoal);
+            margin-bottom: 12px;
+            display: block;
+        }
+        
+        .control-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--color-charcoal);
+            opacity: 0.6;
+            margin-top: 8px;
+        }
+        
+        .output-value {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-medium-orange);
+            margin-top: 16px;
+            padding: 12px;
+            background: var(--color-light-orange);
+            border-radius: var(--border-radius-md);
+        }
+    </style>
+</head>
+<body>
+    <div class="arduino-container">
+        <a href="index.html" class="btn-back mb-3">← Back to Portfolio</a>
+        
+        <div class="arduino-grid">
+            <!-- Code Display Panel -->
+            <div class="code-panel">
+                <h1 class="code-title">Binary Counter Arduino Sketch</h1>
+                <p class="code-description">
+                    Arduino works by using a microcontroller on a physical board to read inputs from sensors and control outputs like LEDs or motors based on code you write in the Arduino IDE. You write a program (called a "sketch") on your computer, and then upload it to the Arduino board, which runs the code to create an interactive project. This Arduino code reads analog input, maps it to 0-63, sets 6 digital pins (LEDs), and prints the value to a display.
+                </p>
+                <div class="code-display">
+                    <pre id="arduino-code"></pre>
+                </div>
+                
+                <div class="arduino-gallery">
+                  <img src="arduino1.png" alt="Arduino build image 1" loading="lazy">
+                  <img src="arduino2.png" alt="Arduino build image 2" loading="lazy">
+                  <img src="arduino3.png" alt="Arduino build image 3" loading="lazy">
+                  <img src="arduino4.png" alt="Arduino build image 4" loading="lazy">
+                </div>
+            </div>
+
+            <!-- Simulation Panel -->
+            <div class="sim-panel">
+                <h2 class="sim-title">Arduino Simulation</h2>
+
+                <!-- Binary LED Display -->
+                <div class="led-section">
+                    <p class="led-label">Binary Output (MSB to LSB: 32, 16, 8, 4, 2, 1)</p>
+                    <div class="led-container">
+                        <div id="led-5" class="led" title="Value 32"></div>
+                        <div id="led-4" class="led" title="Value 16"></div>
+                        <div id="led-3" class="led" title="Value 8"></div>
+                        <div id="led-2" class="led" title="Value 4"></div>
+                        <div id="led-1" class="led" title="Value 2"></div>
+                        <div id="led-0" class="led" title="Value 1"></div>
+                    </div>
+                </div>
+
+                <!-- 7-Segment Display -->
+                <div class="display-section">
+                    <p class="led-label">Decimal Value</p>
+                    <div class="display-wrapper">
+                        <div id="display-tens" class="segment-digit">
+                            <div class="segment h" style="top: 0; left: 10px;" data-segment="a"></div>
+                            <div class="segment v" style="top: 5px; right: 5px;" data-segment="b"></div>
+                            <div class="segment v" style="bottom: 5px; right: 5px;" data-segment="c"></div>
+                            <div class="segment h" style="bottom: 0; left: 10px;" data-segment="d"></div>
+                            <div class="segment v" style="bottom: 5px; left: 5px;" data-segment="e"></div>
+                            <div class="segment v" style="top: 5px; left: 5px;" data-segment="f"></div>
+                            <div class="segment h" style="top: 45px; left: 10px;" data-segment="g"></div>
+                        </div>
+                        <div id="display-ones" class="segment-digit">
+                            <div class="segment h" style="top: 0; left: 10px;" data-segment="a"></div>
+                            <div class="segment v" style="top: 5px; right: 5px;" data-segment="b"></div>
+                            <div class="segment v" style="bottom: 5px; right: 5px;" data-segment="c"></div>
+                            <div class="segment h" style="bottom: 0; left: 10px;" data-segment="d"></div>
+                            <div class="segment v" style="bottom: 5px; left: 5px;" data-segment="e"></div>
+                            <div class="segment v" style="top: 5px; left: 5px;" data-segment="f"></div>
+                            <div class="segment h" style="top: 45px; left: 10px;" data-segment="g"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Potentiometer Control -->
+                <div class="control-section">
+                    <label for="pot-input" class="control-label">Potentiometer (Analog Input Simulation)</label>
+                    <input type="range" id="pot-input" min="0" max="1023" value="0">
+                    <div class="control-info">
+                        <span>0 (0V)</span>
+                        <span>Analog: <span id="analog-val">0</span></span>
+                        <span>1023 (5V)</span>
+                    </div>
+                    <div class="output-value">
+                        Decimal Output: <span id="decimal-val">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- ARDUINO CODE DISPLAY ---
+        const arduinoCode = `
+// Project: Potentiometer Controlled 6-bit Binary Counter (0-63)
+
+int number; 
+const int LED_PINS[] = {2, 3, 4, 5, 6, 7};
+const int NUM_BITS = 6;
+
+int pinA = 8; int pinB = 10; int pinC = A2; int pinD = A4;
+int pinE = A5; int pinF = 9; int pinG = A1;
+int pinDP = A3; int D3 = 11; int D4 = 12; 
+
+void displayBinary(int value) {
+  value = value & 0b111111; // Equivalent to value % 64
+  Serial.println(value);
+  for (int i = 0; i < NUM_BITS; i++) {
+    // 1. Bit Extraction: (value >> i) shifts the i-th bit to the least 
+    //    significant position (0). & 1 masks out all other bits, leaving 
+    //    only a 0 or 1.
+    int bit = (value >> i) & 1;
+    // 2. Output: Write the bit value (which is either 0 or 1) to the pin.
+    //    In Arduino, 1 maps to HIGH and 0 maps to LOW.
+    digitalWrite(LED_PINS[i], bit);
+    showDigits(value);
+  }
+}
+
+void showDigits(int value){
+  int second = value/10; 
+  int first = value%10; 
+  if (first == 0) {
+    digit3();zero();
+    delay(3);
+  }
+  else if(first == 1){
+    digit3();one();
+    delay(3);
+  }
+  else if (first == 2){
+    digit3();two();
+    delay(3);
+  }
+  else if (first == 3){
+    digit3();three();
+    delay(3);
+  }
+  else if (first == 4){
+    digit3();four();
+    delay(3);
+  }
+  else if (first == 5) {
+    digit3();five();
+    delay(3);
+  }
+  else if (first == 6) {
+    digit3();six();
+    delay(3);
+  }
+  else if (first == 7) {
+    digit3();seven();
+    delay(3);
+  }
+  else if (first == 8) {
+    digit3();eight();
+    delay(3);
+  }
+  else if (first == 9) {
+    digit3();nine();
+    delay(3);
+  }
+  
+  if (second == 0) {
+    digit4();zero();
+    delay(3);
+  }
+  else if(second == 1){
+    digit4();one();
+    delay(3);
+  }
+  else if (second == 2){
+    digit4();two();
+    delay(3);
+  }
+  else if (second == 3){
+    digit4();three();
+    delay(3);
+  }
+  else if (second == 4){
+    digit4();four();
+    delay(3);
+  }
+  else if (second == 5) {
+    digit4();five();
+    delay(3);
+  }
+  else if (second == 6) {
+    digit4();six();
+    delay(3);
+  }
+  else if (second == 7) {
+    digit4();seven();
+    delay(3);
+  }
+  else if (second == 8) {
+    digit4();eight();
+    delay(3);
+  }
+  else if (second == 9) {
+    digit4();nine();
+    delay(3);
+  }
+
+}
+
+void setup() {
+  // put your setup code here, to run once:
+  for(int i = 2; i < 8; i++){
+    pinMode(i, OUTPUT);
+    digitalWrite(i, LOW);
+  }
+  Serial.begin(9600);
+
+  pinMode(pinA, OUTPUT);
+  pinMode(pinB, OUTPUT);
+  pinMode(pinC, OUTPUT);
+  pinMode(pinD, OUTPUT);
+  pinMode(pinE, OUTPUT);
+  pinMode(pinF, OUTPUT);
+  pinMode(pinG, OUTPUT);
+  pinMode(pinDP, OUTPUT);
+  pinMode(D3, OUTPUT);
+  pinMode(D4, OUTPUT);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  number = 63*((double) analogRead(A0)/1023);
+  displayBinary(number);
+}
+
+//functions representing numbers 0-9
+void zero(){
+  digitalWrite(pinA, HIGH);
+  digitalWrite(pinB, HIGH);
+  digitalWrite(pinC, HIGH);
+  digitalWrite(pinD, HIGH);
+  digitalWrite(pinE, HIGH);
+  digitalWrite(pinF, HIGH);
+  digitalWrite(pinG, LOW);
+}
+
+void one(){
+  digitalWrite(pinA, LOW);
+  digitalWrite(pinB, HIGH);
+  digitalWrite(pinC, HIGH);
+  digitalWrite(pinD, LOW);
+  digitalWrite(pinE, LOW);
+  digitalWrite(pinF, LOW);
+  digitalWrite(pinG, LOW);
+}
+
+void two(){
+  digitalWrite(pinA, HIGH);
+  digitalWrite(pinB, HIGH);
+  digitalWrite(pinC, LOW);
+  digitalWrite(pinD, HIGH);
+  digitalWrite(pinE, HIGH);
+  digitalWrite(pinF, LOW);
+  digitalWrite(pinG, HIGH);
+}
+
+void three(){
+  digitalWrite(pinA, HIGH);
+  digitalWrite(pinB, HIGH);
+  digitalWrite(pinC, HIGH);
+  digitalWrite(pinD, HIGH);
+  digitalWrite(pinE, LOW);
+  digitalWrite(pinF, LOW);
+  digitalWrite(pinG, HIGH);
+}
+
+void four(){
+  digitalWrite(pinA, LOW);
+  digitalWrite(pinB, HIGH);
+  digitalWrite(pinC, HIGH);
+  digitalWrite(pinD, LOW);
+  digitalWrite(pinE, LOW);
+  digitalWrite(pinF, HIGH);
+  digitalWrite(pinG, HIGH);
+}
+
+void five(){
+  digitalWrite(pinA, HIGH);
+  digitalWrite(pinB, LOW);
+  digitalWrite(pinC, HIGH);
+  digitalWrite(pinD, HIGH);
+  digitalWrite(pinE, LOW);
+  digitalWrite(pinF, HIGH);
+  digitalWrite(pinG, HIGH);
+}
+
+void six(){
+  digitalWrite(pinA, HIGH);
+  digitalWrite(pinB, LOW);
+  digitalWrite(pinC, HIGH);
+  digitalWrite(pinD, HIGH);
+  digitalWrite(pinE, HIGH);
+  digitalWrite(pinF, HIGH);
+  digitalWrite(pinG, HIGH);
+}
+
+void seven(){
+  digitalWrite(pinA, HIGH);
+  digitalWrite(pinB, HIGH);
+  digitalWrite(pinC, HIGH);
+  digitalWrite(pinD, LOW);
+  digitalWrite(pinE, LOW);
+  digitalWrite(pinF, LOW);
+  digitalWrite(pinG, LOW);
+}
+
+void eight(){
+  digitalWrite(pinA, HIGH);
+  digitalWrite(pinB, HIGH);
+  digitalWrite(pinC, HIGH);
+  digitalWrite(pinD, HIGH);
+  digitalWrite(pinE, HIGH);
+  digitalWrite(pinF, HIGH);
+  digitalWrite(pinG, HIGH);
+}
+
+void nine(){
+  digitalWrite(pinA, HIGH);
+  digitalWrite(pinB, HIGH);
+  digitalWrite(pinC, HIGH);
+  digitalWrite(pinD, LOW);
+  digitalWrite(pinE, LOW);
+  digitalWrite(pinF, HIGH);
+  digitalWrite(pinG, HIGH);
+}
+
+void digit3(){
+  digitalWrite(D3, HIGH);
+  digitalWrite(D4, LOW);
+}
+   
+void digit4(){
+  digitalWrite(D3, LOW);
+  digitalWrite(D4, HIGH);
+}
+
+`;
+        document.getElementById('arduino-code').textContent = arduinoCode.trim();
+
+
+        // --- SIMULATION LOGIC ---
+
+        const potInput = document.getElementById('pot-input');
+        const analogValDisplay = document.getElementById('analog-val');
+        const decimalValDisplay = document.getElementById('decimal-val');
+        const ledElements = [
+            document.getElementById('led-0'), // LSB (1)
+            document.getElementById('led-1'),
+            document.getElementById('led-2'),
+            document.getElementById('led-3'),
+            document.getElementById('led-4'),
+            document.getElementById('led-5')  // MSB (32)
+        ];
+
+        /**
+         * 7-Segment Display Logic
+         * Defines which segments (a-g) are ON for each digit (0-9).
+         * Segments:
+         * a
+         * -----
+         * f|  g  |b
+         * -----
+         * e|  d  |c
+         * -----
+         */
+        const SEGMENT_MAP = {
+            '0': ['a', 'b', 'c', 'd', 'e', 'f'],
+            '1': ['b', 'c'],
+            '2': ['a', 'b', 'g', 'e', 'd'],
+            '3': ['a', 'b', 'g', 'c', 'd'],
+            '4': ['f', 'g', 'b', 'c'],
+            '5': ['a', 'f', 'g', 'c', 'd'],
+            '6': ['a', 'f', 'g', 'e', 'c', 'd'],
+            '7': ['a', 'b', 'c'],
+            '8': ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+            '9': ['a', 'b', 'g', 'f', 'c', 'd'],
+            '-': ['g'] // For testing
+        };
+
+        /**
+         * Updates a single 7-segment display element based on a digit value.
+         * @param {number|string} digitValue - The digit to display (0-9).
+         * @param {HTMLElement} displayElement - The container for the 7 segments.
+         */
+        function updateSevenSegmentDisplay(digitValue, displayElement) {
+            const segments = displayElement.querySelectorAll('.segment');
+            const digit = String(digitValue);
+            const segmentsToLight = SEGMENT_MAP[digit] || [];
+
+            segments.forEach(segment => {
+                const segmentName = segment.getAttribute('data-segment');
+                if (segmentsToLight.includes(segmentName)) {
+                    segment.classList.add('on');
+                } else {
+                    segment.classList.remove('on');
+                }
+            });
+        }
+
+
+        /**
+         * Main function to run the simulation loop (on input change).
+         */
+        function runSimulation() {
+            // 1. Read Potentiometer (Simulated Analog Read 0-1023)
+            const analogReadValue = parseInt(potInput.value);
+            analogValDisplay.textContent = analogReadValue;
+
+            // 2. Map Analog Value to Counter Range (0-63)
+            // AnalogRead(0-1023) maps to CounterValue(0-63)
+            const decimalValue = Math.floor((analogReadValue / 1023) * 63);
+            decimalValDisplay.textContent = decimalValue;
+
+            // 3. Convert Decimal to 6-bit Binary String (e.g., 42 -> "101010")
+            const binaryString = decimalValue.toString(2).padStart(6, '0');
+
+            // 4. Update the 6 LEDs (Binary Output)
+            // Note: The LEDs are indexed 0 (LSB) to 5 (MSB)
+            // The binary string is indexed 0 (MSB) to 5 (LSB)
+            for (let i = 0; i < 6; i++) {
+                // We use the reverse index of the binary string to match LSB/MSB
+                const bit = binaryString[5 - i];
+                if (bit === '1') {
+                    ledElements[i].classList.add('on');
+                } else {
+                    ledElements[i].classList.remove('on');
+                }
+            }
+
+            // 5. Update the 2-Digit 7-Segment Display (Decimal Output)
+            const decimalStr = String(decimalValue).padStart(2, '0');
+            const tensDigit = decimalStr[0];
+            const onesDigit = decimalStr[1];
+
+            const tensDisplay = document.getElementById('display-tens');
+            const onesDisplay = document.getElementById('display-ones');
+
+            updateSevenSegmentDisplay(tensDigit, tensDisplay);
+            updateSevenSegmentDisplay(onesDigit, onesDisplay);
+        }
+
+        // Initialize simulation on load
+        runSimulation();
+
+        // Attach event listener to the potentiometer input
+        potInput.addEventListener('input', runSimulation);
+    </script>
+</body>
+</html>

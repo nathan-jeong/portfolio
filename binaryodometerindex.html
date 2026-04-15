@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Odometer Base Converter</title>
+    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="binaryodometerstyle.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="converter-container">
+        <a href="index.html" class="btn-back mb-3">
+            <i class="fas fa-arrow-left"></i> Back to Portfolio
+        </a>
+        
+        <div class="converter-card">
+            <h1 class="converter-title">Odometer Base Converter</h1>
+            <p class="converter-description">
+                Convert any number between a given base and base 10 seamlessly.
+            </p>
+
+            <div class="input-group">
+                <div class="input-field">
+                    <i class="fas fa-hashtag input-icon"></i>
+                    <input id="numberInput" type="text" placeholder="Enter number" class="input">
+                </div>
+
+                <div class="input-field">
+                    <i class="fas fa-arrow-right-to-bracket input-icon"></i>
+                    <input id="fromBase" type="number" value="10" placeholder="From Base (e.g., 2, 16)" class="input">
+                </div>
+
+                <div class="input-field">
+                    <i class="fas fa-arrow-right-from-bracket input-icon"></i>
+                    <input id="toBase" type="number" value="10" placeholder="To Base (e.g., 2, 16)" class="input">
+                </div>
+            </div>
+
+            <div class="result-section">
+                <p class="result-label">Result:</p>
+                <div id="resultBox" class="result-box">0</div>
+                <p id="errorBox" class="error-message"></p>
+            </div>
+
+            <div class="info-section">
+                <h2 class="info-title">Additional Information</h2>
+                <p class="info-text">
+                    This odometer-style converter was built to demonstrate number base conversion using a clean and modern interface. It uses HTML for structure, CSS for styling, and JavaScript for the conversion logic. The application's core functionality relies on native JavaScript methods like "parseInt()" and "toString()" to perform the base conversions.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Link to external script -->
+    <script src="binaryodometerscript.js"></script>
+</body>
+</html>

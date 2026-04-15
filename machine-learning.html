@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine Learning | Nathan Jeong</title>
+    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="ml.css">
+</head>
+<body class="ml-page">
+    <div class="showcase-shell ml-shell">
+        <div class="ml-header-wrapper">
+            <a class="btn-back back-link" href="index.html">← Back to Portfolio</a>
+            <header class="hero card ml-hero">
+                <div class="hero-banner ml-hero-banner">
+                    <div class="ml-banner-copy">
+                        <p class="ml-banner-kicker">Python • Jupyter Notebook • Linear Regression</p>
+                        <h1>Machine Learning Projects</h1>
+                    </div>
+                </div>
+
+                <div class="hero-body ml-hero-body">
+                    <div class="hero-copy ml-hero-copy">
+                        <p class="hero-lead ml-hero-lead">
+                            I built two regression notebooks from scratch: Boston housing prediction and salary prediction with categorical encoding. Both use train/test splits, linear regression, and scatter-plot evaluation.
+                        </p>
+                    </div>
+
+                    <div class="login-callout ml-callout">
+                    <p>These summaries are based on my current notebook code and saved output cells.</p>
+                    <ul class="ml-focus-list">
+                        <li><strong>BostonHousing.ipynb:</strong> Predicts <code>medv</code> from all remaining features.</li>
+                        <li><strong>SalaryData.ipynb:</strong> Uses one-hot encoding for gender, education, and job title.</li>
+                        <li><strong>Evaluation:</strong> Prints coefficients, intercept, MSE, and $R^2$.</li>
+                        <li><strong>Visual validation:</strong> Scatter plots compare actual vs. predicted values.</li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+    </div>
+    </div>
+
+    <main class="container ml-main">
+        <section class="section ml-section">
+            <div class="section-heading">
+                <h2>Machine Learning Projects</h2>
+            </div>
+
+            <article class="card experiment-card ml-project-card">
+                <div class="experiment-topline">
+                    <span class="experiment-badge">BostonHousing.ipynb</span>
+                    <span class="experiment-meta">Linear regression</span>
+                </div>
+                <h3>Home value prediction notebook</h3>
+                <p>
+                    I read <code>BostonHousing.csv</code>, set <code>X</code> to all columns except
+                    <code>medv</code>, split with <code>test_size = 0.1</code>, and trained
+                    <code>LinearRegression()</code> before plotting actual vs. predicted values.
+                    The notebook uses all 13 Boston predictors and prints coefficients plus intercept
+                    so I can inspect feature influence after training. In the saved run,
+                    Boston Housing reached <strong>$R^2$ = 0.72</strong>.
+                </p>
+                <div class="download-row">
+                    <a class="btn btn-secondary" href="BostonHousing.ipynb" download>Download BostonHousing Notebook</a>
+                </div>
+                <div class="preview-grid">
+                    <div class="code-panel">
+                        <h4>Code preview</h4>
+                        <pre><code>housing_data = pd.read_csv('/content/drive/MyDrive/Colab Notebooks/BostonHousing.csv')
+X = housing_data.drop('medv', axis = 'columns')
+y = housing_data['medv']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.1)
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+
+plt.scatter(y_test, y_pred, alpha = 0.8, marker = "^", color = "red")
+plt.xlabel("Actual Values")
+plt.ylabel("Predicted Values")</code></pre>
+                    </div>
+                    <figure class="graph-panel">
+                        <figcaption>Graph preview from saved notebook output</figcaption>
+                        <img src="boston-graph-preview.png" alt="Boston Housing notebook scatter plot of actual versus predicted values" />
+                    </figure>
+                </div>
+            </article>
+
+            <article class="card experiment-card experiment-card-accent ml-project-card">
+                <div class="experiment-topline">
+                    <span class="experiment-badge">SalaryData.ipynb</span>
+                    <span class="experiment-meta">Categorical encoding + regression</span>
+                </div>
+                <h3>Salary prediction notebook</h3>
+                <p>
+                    I removed missing rows, one-hot encoded categorical fields, and trained a linear
+                    regression model with <code>test_size = .2</code>. In the saved run, the notebook
+                    printed <strong>MSE = 353,231,229.47</strong>, <strong>$R^2$ = 0.87</strong>, and
+                    encoded <strong>191 unique job titles</strong> for modeling.
+                    The final design matrix expands to 203 columns after encoding, and I print the full
+                    coefficient list to compare how each feature contributes to salary prediction.
+                </p>
+                <div class="download-row">
+                    <a class="btn btn-secondary" href="SalaryData.ipynb" download>Download SalaryData Notebook</a>
+                </div>
+                <div class="preview-grid">
+                    <div class="code-panel">
+                        <h4>Code preview</h4>
+                        <pre><code>salary_data = salary_data.dropna()
+X = salary_data.drop(['Salary'], axis = 'columns')
+y = salary_data['Salary']
+
+X = pd.get_dummies(X, columns = ['Gender'])
+X = pd.get_dummies(X, columns = ['Education Level'])
+X = pd.get_dummies(X, columns = ['Job Title'])
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = .2)
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)</code></pre>
+                    </div>
+                    <figure class="graph-panel">
+                        <figcaption>Graph preview from saved notebook output</figcaption>
+                        <img src="salary-graph-preview.png" alt="Salary notebook scatter plot of actual salaries versus predicted salaries" />
+                    </figure>
+                </div>
+            </article>
+        </section>
+    </main>
+
+</body>
+</html>

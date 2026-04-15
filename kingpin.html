@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>KingPin Showcase | Nathan Jeong</title>
+	<link rel="stylesheet" href="shared.css">
+	<link rel="stylesheet" href="kingpin.css">
+</head>
+<body>
+	<div class="showcase-shell">
+		<a class="btn-back back-link" href="index.html">← Back to Portfolio</a>
+
+		<header class="hero card">
+			<div class="hero-banner">
+				<img class="kingpin-logo" src="KINGPIN_logo_transparent.png" alt="KingPin logo">
+			</div>
+
+			<div class="hero-body">
+				<div class="hero-copy">
+					<p class="hero-lead">
+						KingPin is a bowling statistics platform for coaches and players. It combines roster management, match input, analytics, awards, and account tools into one bowling-focused dashboard.
+					</p>
+
+					<div class="cta-row">
+						<a class="btn btn-primary" href="https://nathan-jeong.github.io/KingPin/" target="_blank" rel="noreferrer">Open Live Site</a>
+					</div>
+				</div>
+
+				<div class="login-callout">
+					<div class="login-callout-title">Guest Login</div>
+					<p>Use <strong>example@gmail.com</strong> and the password <strong>password</strong> to explore the features.</p>
+				</div>
+			</div>
+		</header>
+
+		<section class="preview-section section">
+			<div class="section-heading">
+				<h2>Live Preview</h2>
+				<p>Browse the site inside the window below.</p>
+			</div>
+			<div class="preview-card card">
+				<div class="preview-bar">
+					<span>Embedded Preview</span>
+					<a href="https://nathan-jeong.github.io/KingPin/" target="_blank" rel="noreferrer">Open Full Screen</a>
+				</div>
+				<iframe src="https://nathan-jeong.github.io/KingPin/" title="KingPin live preview" loading="lazy"></iframe>
+			</div>
+		</section>
+
+		<section class="section-grid">
+			<article class="card info-card">
+				<h2>Key Features</h2>
+				<div class="feature-grid">
+					<div class="feature-pill">
+						<strong>Login & Team Code</strong>
+						Coach login and a 4-digit team entry flow.
+					</div>
+					<div class="feature-pill">
+						<strong>Dashboard</strong>
+						Top scorers, awards, match center, and settings.
+					</div>
+					<div class="feature-pill">
+						<strong>Match Editing</strong>
+						Score input, match browsing, and edit mode.
+					</div>
+					<div class="feature-pill">
+						<strong>Player Stats</strong>
+						Per-player averages and team breakdowns.
+					</div>
+					<div class="feature-pill">
+						<strong>Awards</strong>
+						Create and manage awards from the dashboard.
+					</div>
+					<div class="feature-pill">
+						<strong>Export & Settings</strong>
+						Spreadsheet export and account settings tools.
+					</div>
+				</div>
+			</article>
+
+			<article class="card info-card">
+				<h2>Pages In The Build</h2>
+				<ul class="feature-list">
+					<li><strong>login.html</strong> handles coach login and team-code entry.</li>
+					<li><strong>dashboard.html</strong> surfaces the team overview and match center.</li>
+					<li><strong>statInput.html</strong> is the scoring/input workflow.</li>
+					<li><strong>matchView.html</strong> shows the per-match breakdown and edit mode.</li>
+					<li><strong>teamScores.html</strong>, <strong>plyrScores.html</strong>, and player stat pages show team and player analytics.</li>
+					<li><strong>settings.html</strong> and <strong>signUp.html</strong> manage account setup and preferences.</li>
+				</ul>
+			</article>
+		</section>
+
+		<section class="section-grid">
+			<article class="card info-card">
+				<h2>Backend Schemas</h2>
+				<div class="schema-grid">
+					<div class="schema-card">
+						<h3>Account</h3>
+						<div class="field"><span>Email</span><span>required</span></div>
+						<div class="field"><span>Password</span><span>validated server-side</span></div>
+						<div class="field"><span>Username</span><span>required</span></div>
+						<div class="field"><span>Display Name</span><span>optional</span></div>
+					</div>
+
+					<div class="schema-card">
+						<h3>Team</h3>
+						<div class="field"><span>Team Name</span><span>required</span></div>
+						<div class="field"><span>Team Code</span><span>join code</span></div>
+						<div class="field"><span>Record</span><span>wins / losses</span></div>
+						<div class="field"><span>Members</span><span>player list</span></div>
+					</div>
+
+					<div class="schema-card">
+						<h3>Player</h3>
+						<div class="field"><span>Name</span><span>required</span></div>
+						<div class="field"><span>Graduation Year</span><span>optional</span></div>
+						<div class="field"><span>Matches Played</span><span>derived</span></div>
+						<div class="field"><span>Averages</span><span>per game + total</span></div>
+					</div>
+
+					<div class="schema-card">
+						<h3>Match</h3>
+						<div class="field"><span>Opponent</span><span>required</span></div>
+						<div class="field"><span>Location</span><span>optional</span></div>
+						<div class="field"><span>Scores</span><span>3-game rows</span></div>
+						<div class="field"><span>Notes</span><span>editable</span></div>
+					</div>
+
+					<div class="schema-card">
+						<h3>Award</h3>
+						<div class="field"><span>Title</span><span>required</span></div>
+						<div class="field"><span>Year</span><span>required</span></div>
+						<div class="field"><span>Recipient</span><span>team / player</span></div>
+					</div>
+
+					<div class="schema-card">
+						<h3>Reset / Email Token</h3>
+						<div class="field"><span>Token</span><span>time-limited</span></div>
+						<div class="field"><span>Email</span><span>reset / unsubscribe</span></div>
+						<div class="field"><span>Expiry</span><span>server managed</span></div>
+					</div>
+				</div>
+			</article>
+
+			<article class="card info-card">
+				<h2>How It Was Designed</h2>
+				<ul class="schema-list">
+					<li>The backend docs show a Firestore-first structure with per-user and per-team collections.</li>
+					<li>Middleware strips passwords from GET routes and validates passwords for write routes.</li>
+					<li>The UI is split into focused screens for login, dashboard, scoring, stats, and settings.</li>
+					<li>The workflow is built for coaches: log in, select a team, enter scores, review stats, and export when needed.</li>
+				</ul>
+
+				<div class="design-notes">
+					<div class="note-block">
+						<h3>Navigation</h3>
+						<p class="small-muted">Dashboard sections act like a control center, while the detailed views isolate one task at a time.</p>
+					</div>
+					<div class="note-block">
+						<h3>Data Model</h3>
+						<p class="small-muted">Accounts, teams, players, matches, and awards are stored in Firestore with predictable schemas.</p>
+					</div>
+				</div>
+			</article>
+		</section>
+	</div>
+</body>
+</html>
